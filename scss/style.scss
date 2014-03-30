@@ -1,3 +1,4 @@
+@import 'compass';
 @import './lib/normalize.scss';
 
 @mixin font-weight ($weight: 'regular') {
@@ -7,37 +8,213 @@
 
 $column: 70px;
 $gutter: 15px;
-$max-width: ($column + 2 * $gutter) * 12;
+$max-width: ($column + 2 * $gutter) * 16;
 
 $black: hsl(0,0,20%);
 
-body {
-  @include font-weight();
+$break-medium: 650px;
+$break-semi-large: 1100px;
+$break-large: 1550px;
+$break-extra-large: 1700px;
+
+$break-tall: 960px;
+$break-medium-tall: 680px;
+
+$experimental-support-for-mozilla: true;
+$experimental-support-for-webkit: true;
+$experimental-support-for-microsoft: true;
+
+
+@include keyframes(appear) {
+  0% {
+    @include opacity(0);
+    @include transform(translateY(30px));
+  }
+  40% {
+    @include opacity(0);
+    @include transform(translateY(30px));
+  }
+  80% {
+    @include transform(translateY(0px));
+  }
+  100% {
+    @include opacity(1);
+  }
 }
 
+
+@mixin font-size($size: 20) {
+  font-size: #{$size}px;
+  font-size: #{$size/10}rem;
+}
+
+@mixin screens($type) {
+  @if($type == medium) {
+    @media only screen and (min-width: $break-medium) { @content; }
+  }
+  @if($type == semi-large) {
+    @media only screen and (min-width: $break-semi-large) { @content; }
+  }
+  @if($type == large) {
+    @media only screen and (min-width: $break-large) { @content; }
+  }
+  @if($type == extra-large) {
+    @media only screen and (min-width: $break-extra-large) { @content; }
+  }
+  @if($type == medium-tall){
+    @media only screen and (min-height: $break-medium-tall) { @content; }
+  }
+  @if($type == tall) {
+    @media only screen and (min-height: $break-tall) { @content; }
+  }
+}
+
+html, body, input, button {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  @include font-weight();
+
+  font-size: 50%;
+  @include screens(medium){ font-size: 62.5%; }
+  @include screens(extra-large){ font-size: 75%; }
+
+}
+
+body {
+  @include font-size(15);
+  background-color: white;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  text-align: center;
+  background-color: white;
+  @include transform(translateY(0));
+  z-index: 100;
+  @include box-shadow(0px 1px 0px rgba(black, .2));
+  @include screens(semi-large) {
+    display: none;
+  }
+  .logotype {
+    line-height: 80px;
+  }
+  .burger {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    width: 30px;
+    .line {
+      border-top: 3px solid $black;
+      width: 100%;
+      margin-bottom: 5px;
+    }
+  }
+}
 .content {
   max-width: $max-width;
   margin: 0 auto;
+
+  padding: 0 $gutter;
+
+  @include screens(semi-large) {
+    padding: 0 (2 * ($column + $gutter) + 4 * $gutter);
+  }
 }
 .full_navigation {
-  float: left;
-  width: (70+30+70)/1200 * 100%;
-  margin: 0 1.25%;
+  display: none;
 
-  .navigation_item a {
-    color: $black;
-    text-decoration: none;
-    line-height: 1.4;
+  @include screens(semi-large) {
+    display: block;
   }
 
-  .top_navigation_item {
-    @extend .navigation_item;
-    @include font-weight(bold);
-    margin-bottom: 1.2em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2 * ($column + $gutter);
+  margin: 0 2*$gutter;
+
+  .logotype {
+    line-height: 140px;
+  }
+
+  .main_navigation {
+    @include transition(opacity .3s);
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    .navigation_item a {
+      color: $black;
+      text-decoration: none;
+      line-height: 1.5;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .top_navigation_item {
+      @extend .navigation_item;
+      @include font-weight(bold);
+      margin-bottom: 1.2em;
+    }
   }
 }
 
-.container {
-  float: left;
-  width: 80%;
+
+.product_list {
+  a {
+    text-decoration: none;
+  }
+  li {
+    @include animation(appear 1.1s);
+    width: (100%/2);
+    @include screens(medium) { width: (100%/3); }
+    @include screens(large) { width: (100%/4); }
+    @include screens(extra-large) { width: (100%/5); }
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 4em;
+    .image_container {
+      @include transition(all .25s);
+      @include transform(scale(.97));
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+    .info {
+      @include transition(all .25s);
+      opacity: .7;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      line-height: 1.4;
+      color: $black;
+
+    }
+    .price {
+      @include font-weight(bold);
+      letter-spacing: 1px;
+    }
+    &:hover {
+      .image_container {
+        @include transform(translateY(-8px) scale(1));
+      }
+      .info {
+        opacity: 1;
+        @include transform(translateY(-4px));
+      }
+    }
+  }
 }
